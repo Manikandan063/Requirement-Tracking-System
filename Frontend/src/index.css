@@ -1136,6 +1136,10 @@ body:is(.dark *) {
   min-height: 100vh;
 }
 
+.min-h-\[calc\(100vh-200px\)\] {
+  min-height: calc(100vh - 200px);
+}
+
 .w-0 {
   width: 0px;
 }

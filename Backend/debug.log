@@ -40,3 +40,11 @@
 403 Forbidden! User role: JOB_SEEKER, Allowed roles: HR, URL: /api/dashboard/hr
 403 Forbidden! User role: JOB_SEEKER, Allowed roles: HR, URL: /api/dashboard/hr
 403 Forbidden! User role: JOB_SEEKER, Allowed roles: HR, URL: /api/dashboard/hr
+403 Forbidden! User role: COMPANY_ADMIN, Allowed roles: JOB_SEEKER, URL: /api/follows/my-companies
+403 Forbidden! User role: COMPANY_ADMIN, Allowed roles: JOB_SEEKER, URL: /api/follows/my-companies
+403 Forbidden! User role: COMPANY_ADMIN, Allowed roles: JOB_SEEKER, URL: /api/applications/my-applications
+403 Forbidden! User role: COMPANY_ADMIN, Allowed roles: JOB_SEEKER, URL: /api/applications/my-applications
+403 Forbidden! User role: COMPANY_ADMIN, Allowed roles: JOB_SEEKER, URL: /api/applications/my-applications
+403 Forbidden! User role: COMPANY_ADMIN, Allowed roles: JOB_SEEKER, URL: /api/applications/my-applications
+403 Forbidden! User role: COMPANY_ADMIN, Allowed roles: JOB_SEEKER, URL: /api/applications/my-applications
+403 Forbidden! User role: COMPANY_ADMIN, Allowed roles: JOB_SEEKER, URL: /api/applications/my-applications

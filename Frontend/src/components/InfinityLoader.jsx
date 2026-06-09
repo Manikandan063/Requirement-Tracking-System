@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 
 export default function InfinityLoader({ text = "Loading..." }) {
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full min-h-[40vh]">
+    <div className="flex flex-col items-center justify-center w-full h-full min-h-[calc(100vh-200px)]">
       <div className="relative flex items-center justify-center">
         <svg width="120" height="60" viewBox="0 0 100 50" className="overflow-visible">
           {/* Background Track */}
