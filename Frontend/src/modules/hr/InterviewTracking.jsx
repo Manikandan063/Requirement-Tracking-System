@@ -4,6 +4,8 @@ import api from '../../services/api';
 import PageHeader from '../../components/common/PageHeader';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
+import { motion, AnimatePresence } from 'framer-motion';
+import { CheckCircle2 } from 'lucide-react';
 
 export default function InterviewTracking() {
   const { applicationId } = useParams();
@@ -14,6 +16,12 @@ export default function InterviewTracking() {
     round2Name: '', round2Score: '',
     round3Name: '', round3Score: ''
   });
+  const [toastMsg, setToastMsg] = useState('');
+
+  const showToast = (msg) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(''), 2000);
+  };
 
   useEffect(() => {
     api.get(`/interviews/${applicationId}`).then(res => {
@@ -38,7 +46,7 @@ export default function InterviewTracking() {
     e.preventDefault();
     try {
       const res = await api.post(`/interviews/${applicationId}/schedule`, formData);
-      alert(interview ? 'Interview Schedule Updated' : 'Interview Scheduled');
+      showToast(interview ? 'Interview schedule updated ✓' : 'Interview scheduled ✓');
       setInterview(res.data.data);
     } catch (err) {
       alert(err.response?.data?.message || 'Error scheduling');
@@ -69,7 +77,7 @@ export default function InterviewTracking() {
   const sendToAdmin = async () => {
     try {
       await api.put(`/applications/${applicationId}/status`, { status: 'SENT_TO_ADMIN' });
-      alert('Sent to admin for final verification');
+      showToast('Sent to admin for final verification ✓');
     } catch (err) {
       alert('Error sending to admin');
     }
@@ -163,6 +171,22 @@ export default function InterviewTracking() {
           </div>
         )}
       </div>
+
+      <AnimatePresence>
+        {toastMsg && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, x: 20 }}
+            animate={{ opacity: 1, y: 0, x: 0 }}
+            exit={{ opacity: 0, y: 20, x: 20 }}
+            className="fixed bottom-6 right-6 bg-[#0F172A] text-white px-6 py-4 rounded-xl shadow-2xl font-bold flex items-center gap-3 z-50 border border-slate-700"
+          >
+            <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center">
+              <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+            </div>
+            {toastMsg}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

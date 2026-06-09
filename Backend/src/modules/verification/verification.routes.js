@@ -7,8 +7,8 @@ const router = Router();
 
 router.use(authMiddleware);
 
-router.post('/:applicationId/search', roleMiddleware(['HR']), verificationController.searchVerification);
-router.put('/:applicationId/verify', roleMiddleware(['HR', 'SUPER_ADMIN']), verificationController.verifyCandidate);
+router.post('/:applicationId/search', roleMiddleware(['HR', 'ADMIN', 'COMPANY_ADMIN', 'SUPER_ADMIN']), verificationController.searchVerification);
+router.put('/:applicationId/verify', roleMiddleware(['HR', 'ADMIN', 'COMPANY_ADMIN', 'SUPER_ADMIN']), verificationController.verifyCandidate);
 router.get('/:applicationId', verificationController.getVerification);
 
 export default router;

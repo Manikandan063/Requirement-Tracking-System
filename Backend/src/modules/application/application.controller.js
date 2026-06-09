@@ -29,6 +29,15 @@ export const getApplicationsByJob = async (req, res, next) => {
   }
 };
 
+export const getAllHrApplications = async (req, res, next) => {
+  try {
+    const applications = await applicationService.getAllHrApplications(req.user.id);
+    res.status(200).json({ success: true, message: 'Applications fetched', data: applications });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getApplicationById = async (req, res, next) => {
   try {
     const application = await applicationService.getApplicationById(req.params.id);

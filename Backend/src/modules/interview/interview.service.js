@@ -38,6 +38,5 @@ export const updateRoundStatus = async (applicationId, data) => {
 
 export const getInterview = async (applicationId) => {
   const interview = await Interview.findOne({ where: { applicationId } });
-  if (!interview) throw new Error('Interview not found');
-  return interview;
+  return interview; // null if not found
 };

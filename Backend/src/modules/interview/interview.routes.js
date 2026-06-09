@@ -7,9 +7,9 @@ const router = Router();
 
 router.use(authMiddleware);
 
-router.post('/:applicationId/schedule', roleMiddleware(['HR']), interviewController.scheduleInterview);
+router.post('/:applicationId/schedule', roleMiddleware(['HR', 'ADMIN', 'COMPANY_ADMIN', 'SUPER_ADMIN']), interviewController.scheduleInterview);
 router.put('/:applicationId/confirm', roleMiddleware(['JOB_SEEKER']), interviewController.confirmInterview);
-router.put('/:applicationId/round-status', roleMiddleware(['HR']), interviewController.updateRoundStatus);
+router.put('/:applicationId/round-status', roleMiddleware(['HR', 'ADMIN', 'COMPANY_ADMIN', 'SUPER_ADMIN']), interviewController.updateRoundStatus);
 router.get('/:applicationId', interviewController.getInterview);
 
 export default router;

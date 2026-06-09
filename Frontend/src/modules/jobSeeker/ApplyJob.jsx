@@ -1,21 +1,27 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../services/api';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { CheckCircle2 } from 'lucide-react';
 
 export default function ApplyJob() {
   const { jobPostId } = useParams();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ name: '', email: '', phoneNumber: '', education: '', skills: '', experience: '', resumeUrl: '' });
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       await api.post(`/applications/${jobPostId}`, formData);
-      alert('Application submitted!');
-      navigate('/my-applications');
+      setIsSuccess(true);
+      setTimeout(() => setIsSuccess(false), 2000);
     } catch (err) {
       alert(err.response?.data?.message || 'Error applying');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -40,11 +46,28 @@ export default function ApplyJob() {
               <div><label className="block text-sm font-bold text-slate-700 mb-2">Resume URL</label><input type="url" className="w-full border border-slate-200 rounded-xl p-3.5 bg-slate-50 focus:ring-2 focus:ring-[#0A66C2] focus:border-[#0A66C2] outline-none transition-all" placeholder="https://drive.google.com/..." value={formData.resumeUrl} onChange={e=>setFormData({...formData, resumeUrl: e.target.value})}/></div>
             </div>
             <div className="pt-6 border-t border-slate-100">
-              <button type="submit" className="w-full bg-[#0A66C2] hover:bg-[#084e96] text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-blue-500/20 transition-all">Submit Application</button>
+              <button disabled={isLoading || isSuccess} type="submit" className="w-full bg-[#0A66C2] hover:bg-[#084e96] disabled:opacity-70 disabled:cursor-not-allowed text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-blue-500/20 transition-all flex justify-center items-center gap-2">
+                {isLoading ? 'Submitting...' : isSuccess ? '✓ Submitted' : 'Submit Application'}
+              </button>
             </div>
           </form>
         </div>
       </motion.div>
+      <AnimatePresence>
+        {isSuccess && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, x: 20 }}
+            animate={{ opacity: 1, y: 0, x: 0 }}
+            exit={{ opacity: 0, y: 20, x: 20 }}
+            className="fixed bottom-6 right-6 bg-[#0F172A] text-white px-6 py-4 rounded-xl shadow-2xl font-bold flex items-center gap-3 z-50 border border-slate-700"
+          >
+            <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center">
+              <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+            </div>
+            Application submitted successfully ✓
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

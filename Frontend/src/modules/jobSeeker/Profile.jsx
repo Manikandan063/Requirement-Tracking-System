@@ -1,21 +1,39 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
-import { Camera, Mail, Phone, MapPin, User, CheckCircle, ShieldCheck, Linkedin, UploadCloud, FileText } from 'lucide-react';
+import { Camera, Mail, Phone, MapPin, User, CheckCircle, ShieldCheck, Linkedin, UploadCloud, FileText, Trophy } from 'lucide-react';
+import Confetti from 'react-confetti';
 
 export default function Profile() {
   const [profile, setProfile] = useState({ name: '', email: '', phoneNumber: '', linkedinUrl: '', resumeUrl: '' });
   const [isSaving, setIsSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [hasOffer, setHasOffer] = useState(false);
 
   useEffect(() => {
-    api.get('/auth/me').then(res => {
+    // Fetch profile and check for offer simultaneously
+    Promise.all([
+      api.get('/auth/me'),
+      api.get('/applications/my-applications')
+    ]).then(([profileRes, appsRes]) => {
+      // Profile setup
+      const p = profileRes.data.data;
       setProfile({ 
-        name: res.data.data.name, 
-        email: res.data.data.email, 
-        phoneNumber: res.data.data.phoneNumber || '',
-        linkedinUrl: res.data.data.linkedinUrl || '',
-        resumeUrl: res.data.data.resumeUrl || ''
+        name: p.name, 
+        email: p.email, 
+        phoneNumber: p.phoneNumber || '',
+        linkedinUrl: p.linkedinUrl || '',
+        resumeUrl: p.resumeUrl || ''
       });
+
+      // Achievement / Offer Check
+      const applications = appsRes.data.data || [];
+      const gotOffer = applications.some(app => app.status === 'OFFER_LETTER_SENT' || app.status === 'HIRED');
+      if (gotOffer) {
+        setHasOffer(true);
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 8000);
+      }
     }).catch(console.error);
   }, []);
 
@@ -39,7 +57,19 @@ export default function Profile() {
   const iconWrapperClass = "absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none";
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 pb-12">
+    <>
+      {showConfetti && (
+        <div className="fixed inset-0 z-[100] pointer-events-none">
+          <Confetti 
+            width={window.innerWidth} 
+            height={window.innerHeight} 
+            recycle={false} 
+            numberOfPieces={600} 
+            gravity={0.15}
+          />
+        </div>
+      )}
+      <div className="max-w-4xl mx-auto space-y-8 pb-12">
       {/* Header Profile Section */}
       <div className="bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden relative">
         <div className="absolute inset-0 h-40 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20 mix-blend-overlay pointer-events-none"></div>
@@ -69,6 +99,11 @@ export default function Profile() {
                 <span className="flex items-center gap-1.5 text-sm font-semibold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-md border border-emerald-100">
                   <ShieldCheck className="w-4 h-4"/> Verified Candidate
                 </span>
+                {hasOffer && (
+                  <span className="flex items-center gap-1.5 text-sm font-black text-amber-600 bg-amber-50 px-3 py-1 rounded-md border border-amber-200 shadow-sm animate-pulse-slow">
+                    <Trophy className="w-4 h-4 text-amber-500" /> Offer Received!
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -159,5 +194,6 @@ export default function Profile() {
         </form>
       </div>
     </div>
+    </>
   );
 }

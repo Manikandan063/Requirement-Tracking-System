@@ -1,4 +1,4 @@
-import { Application, JobPost, Company, Interview, Verification } from '../../models/initModels.js';
+import { Application, JobPost, Company, Interview, Verification, User, OfferLetter } from '../../models/initModels.js';
 
 export const applyForJob = async (jobSeekerId, jobPostId, data) => {
   const jobPost = await JobPost.findByPk(jobPostId);
@@ -21,7 +21,8 @@ export const getMyApplications = async (jobSeekerId) => {
     where: { jobSeekerId }, 
     include: [
       { model: JobPost, include: [Company] },
-      Interview
+      Interview,
+      OfferLetter
     ] 
   });
 };
@@ -36,8 +37,28 @@ export const getApplicationsByJob = async (jobPostId, hrId) => {
   });
 };
 
+export const getAllHrApplications = async (hrId) => {
+  return await Application.findAll({
+    where: { hrId },
+    include: [
+      { model: JobPost, attributes: ['title'] },
+      Verification, 
+      Interview
+    ],
+    order: [['createdAt', 'DESC']]
+  });
+};
+
 export const getApplicationById = async (id) => {
-  const application = await Application.findByPk(id);
+  const application = await Application.findByPk(id, {
+    include: [
+      { model: User, as: 'jobSeeker', attributes: ['email'] },
+      { model: JobPost, attributes: ['category', 'title'] },
+      Verification,
+      Interview,
+      OfferLetter
+    ]
+  });
   if (!application) throw new Error('Application not found');
   return application;
 };

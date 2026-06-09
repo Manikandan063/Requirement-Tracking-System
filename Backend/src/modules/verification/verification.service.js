@@ -7,20 +7,20 @@ export const searchVerification = async (applicationId, data) => {
   let sources = [];
   if (data.jobCategory === 'IT') {
     sources = [
-      { platformName: 'LinkedIn', profileFound: true, profileUrl: 'dummy_url', verificationNote: 'Matched', status: 'PENDING' },
-      { platformName: 'GitHub', profileFound: true, profileUrl: 'dummy_url', verificationNote: 'Matched', status: 'PENDING' },
-      { platformName: 'LeetCode', profileFound: true, profileUrl: 'dummy_url', verificationNote: 'Matched', status: 'PENDING' },
-      { platformName: 'Coding Ninjas', profileFound: false, profileUrl: null, verificationNote: 'Not Found', status: 'PENDING' },
-      { platformName: 'HackerRank', profileFound: true, profileUrl: 'dummy_url', verificationNote: 'Matched', status: 'PENDING' }
+      { platformName: 'LinkedIn', profileFound: true, profileUrl: 'dummy_url', verificationNote: 'Matched', status: 'PENDING', performanceLevel: 'All-Star Profile' },
+      { platformName: 'GitHub', profileFound: true, profileUrl: 'dummy_url', verificationNote: 'Matched', status: 'PENDING', performanceLevel: '1,240 Contributions' },
+      { platformName: 'LeetCode', profileFound: true, profileUrl: 'dummy_url', verificationNote: 'Matched', status: 'PENDING', performanceLevel: 'Top 15%' },
+      { platformName: 'Coding Ninjas', profileFound: false, profileUrl: null, verificationNote: 'Not Found', status: 'PENDING', performanceLevel: 'N/A' },
+      { platformName: 'HackerRank', profileFound: true, profileUrl: 'dummy_url', verificationNote: 'Matched', status: 'PENDING', performanceLevel: '5 Star Gold' }
     ];
   } else {
     sources = [
-      { platformName: 'LinkedIn', profileFound: true, profileUrl: 'dummy_url', verificationNote: 'Matched', status: 'PENDING' },
-      { platformName: 'Certifications', profileFound: true, profileUrl: 'dummy_url', verificationNote: 'Valid', status: 'PENDING' },
-      { platformName: 'Internships', profileFound: true, profileUrl: 'dummy_url', verificationNote: 'Matched', status: 'PENDING' },
-      { platformName: 'Workshops', profileFound: false, profileUrl: null, verificationNote: 'Not Found', status: 'PENDING' },
-      { platformName: 'Competitions', profileFound: false, profileUrl: null, verificationNote: 'Not Found', status: 'PENDING' },
-      { platformName: 'Portfolio', profileFound: true, profileUrl: 'dummy_url', verificationNote: 'Matched', status: 'PENDING' }
+      { platformName: 'LinkedIn', profileFound: true, profileUrl: 'dummy_url', verificationNote: 'Matched', status: 'PENDING', performanceLevel: 'All-Star Profile' },
+      { platformName: 'Certifications', profileFound: true, profileUrl: 'dummy_url', verificationNote: 'Valid', status: 'PENDING', performanceLevel: 'Advanced Level' },
+      { platformName: 'Internships', profileFound: true, profileUrl: 'dummy_url', verificationNote: 'Matched', status: 'PENDING', performanceLevel: 'High Ratings' },
+      { platformName: 'Workshops', profileFound: false, profileUrl: null, verificationNote: 'Not Found', status: 'PENDING', performanceLevel: 'N/A' },
+      { platformName: 'Competitions', profileFound: false, profileUrl: null, verificationNote: 'Not Found', status: 'PENDING', performanceLevel: 'N/A' },
+      { platformName: 'Portfolio', profileFound: true, profileUrl: 'dummy_url', verificationNote: 'Matched', status: 'PENDING', performanceLevel: 'Excellent' }
     ];
   }
 

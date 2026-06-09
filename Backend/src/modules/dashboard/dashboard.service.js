@@ -1,4 +1,4 @@
-import { User, Company, JobPost, Application, Follow, Interview } from '../../models/initModels.js';
+import { User, Company, JobPost, Application, Follow, Interview, OfferLetter } from '../../models/initModels.js';
 
 export const getSuperAdminDashboard = async () => {
   const companiesCount = await Company.count();
@@ -14,7 +14,8 @@ export const getCompanyAdminDashboard = async (companyId) => {
     where: { companyId, status: 'SENT_TO_ADMIN' },
     include: [
       { model: JobPost, attributes: ['title'] },
-      { model: Interview }
+      { model: Interview },
+      { model: OfferLetter }
     ],
     order: [['updatedAt', 'DESC']]
   });
@@ -23,7 +24,8 @@ export const getCompanyAdminDashboard = async (companyId) => {
     where: { companyId, status: ['ADMIN_VERIFIED', 'REJECTED', 'OFFER_LETTER_SENT'] },
     include: [
       { model: JobPost, attributes: ['title'] },
-      { model: Interview }
+      { model: Interview },
+      { model: OfferLetter }
     ],
     order: [['updatedAt', 'DESC']]
   });
@@ -50,7 +52,17 @@ export const getHrDashboard = async (hrId, companyId) => {
     order: [['updatedAt', 'DESC']]
   });
 
-  return { jobPostsCount, applicationsCount, recentFollowers, adminApproved };
+  const recentApplications = await Application.findAll({
+    where: { hrId },
+    include: [
+      { model: User, as: 'jobSeeker', attributes: ['name', 'email', 'phoneNumber'] },
+      { model: JobPost, attributes: ['title'] }
+    ],
+    order: [['createdAt', 'DESC']],
+    limit: 5
+  });
+
+  return { jobPostsCount, applicationsCount, recentFollowers, adminApproved, recentApplications };
 };
 
 export const getJobSeekerDashboard = async (jobSeekerId) => {
@@ -58,7 +70,19 @@ export const getJobSeekerDashboard = async (jobSeekerId) => {
   const followsCount = await Follow.count({ where: { jobSeekerId } });
   
   const interviewsCount = await Application.count({
-    where: { jobSeekerId, status: ['INTERVIEW_SCHEDULED', 'INTERVIEW_CONFIRMED'] }
+    where: { 
+      jobSeekerId, 
+      status: [
+        'INTERVIEW_SCHEDULED', 
+        'INTERVIEW_CONFIRMED',
+        'ROUND_1_SELECTED',
+        'ROUND_2_SELECTED',
+        'ROUND_3_SELECTED',
+        'SENT_TO_ADMIN',
+        'ADMIN_VERIFIED',
+        'OFFER_LETTER_SENT'
+      ] 
+    }
   });
   
   const offerLettersCount = await Application.count({

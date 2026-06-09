@@ -19,6 +19,14 @@ const User = sequelize.define('User', {
   phoneNumber: {
     type: DataTypes.STRING,
   },
+  linkedinUrl: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  resumeUrl: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   password: {
     type: DataTypes.STRING,
     allowNull: false,

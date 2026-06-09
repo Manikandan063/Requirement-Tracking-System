@@ -17,6 +17,7 @@ import HRDashboard from '../modules/hr/HRDashboard';
 import CreateJobPost from '../modules/hr/CreateJobPost';
 import ManageJobs from '../modules/hr/ManageJobs';
 import Applicants from '../modules/hr/Applicants';
+import NewApplicants from '../modules/hr/NewApplicants';
 import CandidateProfile from '../modules/hr/CandidateProfile';
 import Verification from '../modules/hr/Verification';
 import InterviewTracking from '../modules/hr/InterviewTracking';
@@ -24,7 +25,7 @@ import OfferLetter from '../modules/hr/OfferLetter';
 
 // JOB SEEKER
 import JobSeekerLayout from '../modules/jobSeeker/JobSeekerLayout';
-import JobSeekerHome from '../modules/jobSeeker/JobSeekerHome';
+import JobSeekerDashboard from '../modules/jobSeeker/JobSeekerDashboard';
 import Jobs from '../modules/jobSeeker/Jobs';
 import ApplyJob from '../modules/jobSeeker/ApplyJob';
 import MyApplications from '../modules/jobSeeker/MyApplications';
@@ -56,6 +57,7 @@ const AppRouter = () => {
         <Route path="/hr/dashboard" element={<HRDashboard />} />
         <Route path="/hr/create-job" element={<CreateJobPost />} />
         <Route path="/hr/jobs" element={<ManageJobs />} />
+        <Route path="/hr/new-applicants" element={<NewApplicants />} />
         <Route path="/hr/jobs/:jobPostId/applicants" element={<Applicants />} />
         <Route path="/hr/candidate/:applicationId" element={<CandidateProfile />} />
         <Route path="/hr/verification/:applicationId" element={<Verification />} />
@@ -65,7 +67,7 @@ const AppRouter = () => {
 
       {/* JOB SEEKER ROUTES */}
       <Route element={<ProtectedRoute><RoleBasedRoute allowedRoles={['JOB_SEEKER']}><JobSeekerLayout /></RoleBasedRoute></ProtectedRoute>}>
-        <Route path="/home" element={<JobSeekerHome />} />
+        <Route path="/home" element={<JobSeekerDashboard />} />
         <Route path="/jobs" element={<Jobs />} />
         <Route path="/jobs/:jobPostId/apply" element={<ApplyJob />} />
         <Route path="/companies" element={<JobSeekerCompanies />} />

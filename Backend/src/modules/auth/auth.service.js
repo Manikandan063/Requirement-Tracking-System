@@ -1,4 +1,4 @@
-import { User } from '../../models/initModels.js';
+import { User, Company } from '../../models/initModels.js';
 import { hashPassword, comparePassword } from '../../shared/auth/bcrypt.js';
 import { generateToken } from '../../shared/auth/jwt.js';
 
@@ -19,7 +19,10 @@ export const registerJobSeeker = async (data) => {
 };
 
 export const loginUser = async (email, password) => {
-  const user = await User.findOne({ where: { email } });
+  const user = await User.findOne({ 
+    where: { email },
+    include: [{ model: Company }]
+  });
   if (!user || !user.isActive) {
     throw new Error('Invalid email or password');
   }
@@ -41,7 +44,8 @@ export const loginUser = async (email, password) => {
 
 export const getUserById = async (id) => {
   const user = await User.findByPk(id, {
-    attributes: { exclude: ['password'] }
+    attributes: { exclude: ['password'] },
+    include: [{ model: Company }]
   });
   return user;
 };
