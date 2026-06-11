@@ -23,6 +23,14 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  githubUrl: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  bio: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
   resumeUrl: {
     type: DataTypes.STRING,
     allowNull: true,

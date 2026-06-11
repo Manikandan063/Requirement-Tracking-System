@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Bell, Briefcase, LogOut, User, Menu, X } from 'lucide-react';
@@ -7,8 +7,21 @@ export default function JobSeekerLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
+  const notificationRef = useRef(null);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setShowNotifications(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   const defaultNotifications = [
     {
       id: 1,
@@ -96,7 +109,7 @@ export default function JobSeekerLayout() {
 
             {/* Right Side Actions */}
             <div className="flex items-center gap-5">
-              <div className="hidden sm:flex items-center gap-3 text-slate-300 relative">
+              <div className="hidden sm:flex items-center gap-3 text-slate-300 relative" ref={notificationRef}>
                 <button 
                   onClick={() => setShowNotifications(!showNotifications)}
                   className="p-2 rounded-full hover:bg-slate-800 hover:text-white transition-colors relative"
@@ -180,6 +193,44 @@ export default function JobSeekerLayout() {
             <NavLink to="/jobs" onClick={() => setShowMobileMenu(false)} className={mobileNavLinkClass}>Find Jobs</NavLink>
             <NavLink to="/my-applications" onClick={() => setShowMobileMenu(false)} className={mobileNavLinkClass}>My Applications</NavLink>
             <NavLink to="/interviews" onClick={() => setShowMobileMenu(false)} className={mobileNavLinkClass}>Interviews</NavLink>
+
+            {/* Mobile Notifications */}
+            <div className="border-t border-slate-800 mt-2 pt-2">
+               <button 
+                 onClick={() => setShowNotifications(!showNotifications)} 
+                 className={`flex items-center gap-3 px-4 py-3 text-base transition-all rounded-xl ${showNotifications ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800'} font-medium w-full text-left`}
+               >
+                 <Bell className="w-5 h-5" /> Notifications 
+                 {hasUnread && <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full ml-auto">{notifications.length} New</span>}
+               </button>
+               
+               {/* Inline Mobile Notifications */}
+               {showNotifications && (
+                 <div className="bg-slate-800/50 rounded-xl mt-2 overflow-hidden border border-slate-700/50">
+                    <div className="p-3 border-b border-slate-700 flex justify-between items-center">
+                      <span className="text-sm font-bold text-slate-300">Recent</span>
+                      <span onClick={handleMarkAllRead} className="text-xs text-[#38BDF8] cursor-pointer">Clear</span>
+                    </div>
+                    <div className="max-h-60 overflow-y-auto">
+                      {notifications.length === 0 ? (
+                        <div className="p-4 text-center text-sm text-slate-500">No new notifications</div>
+                      ) : (
+                        notifications.map(n => (
+                          <NavLink 
+                            key={n.id}
+                            to={n.link} 
+                            onClick={() => { handleNotificationClick(n.id); setShowMobileMenu(false); }} 
+                            className="block p-3 border-b border-slate-700/50 hover:bg-slate-800"
+                          >
+                             <p className="text-sm text-slate-300" dangerouslySetInnerHTML={{ __html: n.title }}></p>
+                             <p className="text-xs text-slate-500 mt-1">{n.time}</p>
+                          </NavLink>
+                        ))
+                      )}
+                    </div>
+                 </div>
+               )}
+            </div>
           </nav>
         )}
       </header>

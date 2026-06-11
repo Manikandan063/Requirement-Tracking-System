@@ -52,6 +52,18 @@ const JobPost = sequelize.define('JobPost', {
   status: {
     type: DataTypes.ENUM('ACTIVE', 'CLOSED'),
     defaultValue: 'ACTIVE',
+  },
+  likesCount: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+  },
+  sharesCount: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+  },
+  comments: {
+    type: DataTypes.JSON,
+    defaultValue: [],
   }
 }, {
   timestamps: true,

@@ -55,3 +55,40 @@ export const deleteJobPost = async (req, res, next) => {
     next(error);
   }
 };
+
+export const likeJobPost = async (req, res, next) => {
+  try {
+    const jobPost = await jobPostService.likeJobPost(req.params.id);
+    res.status(200).json({ success: true, message: 'Job post liked', data: jobPost });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const unlikeJobPost = async (req, res, next) => {
+  try {
+    const jobPost = await jobPostService.unlikeJobPost(req.params.id);
+    res.status(200).json({ success: true, message: 'Job post unliked', data: jobPost });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const commentJobPost = async (req, res, next) => {
+  try {
+    const { text } = req.body;
+    const jobPost = await jobPostService.commentJobPost(req.params.id, req.user.id, text, req.user.name);
+    res.status(200).json({ success: true, message: 'Comment added', data: jobPost });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const shareJobPost = async (req, res, next) => {
+  try {
+    const jobPost = await jobPostService.shareJobPost(req.params.id);
+    res.status(200).json({ success: true, message: 'Job post shared', data: jobPost });
+  } catch (error) {
+    next(error);
+  }
+};

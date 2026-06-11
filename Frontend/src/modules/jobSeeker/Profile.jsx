@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
-import { Camera, Mail, Phone, MapPin, User, CheckCircle, ShieldCheck, Linkedin, UploadCloud, FileText, Trophy } from 'lucide-react';
+import { Camera, Mail, Phone, MapPin, User, CheckCircle, ShieldCheck, Linkedin, UploadCloud, FileText, Trophy, Github, Edit2, X } from 'lucide-react';
 import Confetti from 'react-confetti';
 
 export default function Profile() {
-  const [profile, setProfile] = useState({ name: '', email: '', phoneNumber: '', linkedinUrl: '', resumeUrl: '' });
+  const [profile, setProfile] = useState({ name: '', email: '', phoneNumber: '', linkedinUrl: '', githubUrl: '', resumeUrl: '', bio: '' });
+  const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [hasOffer, setHasOffer] = useState(false);
+  const [stats, setStats] = useState({ applicationsCount: 0, interviewsCount: 0, offerLettersCount: 0, followsCount: 0 });
 
   useEffect(() => {
     // Fetch profile and check for offer simultaneously
@@ -23,7 +25,9 @@ export default function Profile() {
         email: p.email, 
         phoneNumber: p.phoneNumber || '',
         linkedinUrl: p.linkedinUrl || '',
-        resumeUrl: p.resumeUrl || ''
+        githubUrl: p.githubUrl || '',
+        resumeUrl: p.resumeUrl || '',
+        bio: p.bio || ''
       });
 
       // Achievement / Offer Check
@@ -31,10 +35,19 @@ export default function Profile() {
       const gotOffer = applications.some(app => app.status === 'OFFER_LETTER_SENT' || app.status === 'HIRED');
       if (gotOffer) {
         setHasOffer(true);
-        setShowConfetti(true);
-        setTimeout(() => setShowConfetti(false), 8000);
+        
+        // Ensure confetti only shows once per user
+        const confettiKey = `confetti_seen_${p.email}`;
+        if (!localStorage.getItem(confettiKey)) {
+          setShowConfetti(true);
+          localStorage.setItem(confettiKey, 'true');
+          setTimeout(() => setShowConfetti(false), 8000);
+        }
       }
     }).catch(console.error);
+
+    // Fetch dashboard stats for Instagram-style profile stats
+    api.get('/dashboard/job-seeker').then(res => setStats(res.data.data)).catch(console.error);
   }, []);
 
   const handleUpdate = async (e) => {
@@ -90,20 +103,72 @@ export default function Profile() {
           </div>
           
           <div className="mt-4 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 relative z-10">
-            <div>
-              <h1 className="text-3xl font-black text-[#0F172A] tracking-tight">{profile.name || 'Your Name'}</h1>
-              <div className="flex flex-wrap items-center gap-4 mt-3">
-                <span className="flex items-center gap-1.5 text-sm font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-md">
+            <div className="flex-1 pr-4">
+              <div className="flex justify-between items-start sm:items-center">
+                <h1 className="text-3xl font-black text-[#0F172A] tracking-tight">{profile.name || 'Your Name'}</h1>
+                <button 
+                  onClick={() => setIsEditing(!isEditing)}
+                  className={`sm:hidden bg-white/80 backdrop-blur border text-slate-700 px-4 py-2 rounded-xl text-sm font-bold shadow-sm flex items-center gap-2 transition-all ${isEditing ? 'border-red-200 hover:text-red-500 hover:border-red-500' : 'border-slate-200 hover:text-[#38BDF8] hover:border-[#38BDF8]'}`}
+                >
+                  {isEditing ? <><X className="w-4 h-4"/> Close</> : <><Edit2 className="w-4 h-4"/> Edit</>}
+                </button>
+              </div>
+              <p className="text-sm text-slate-600 mt-2 max-w-lg leading-relaxed font-medium">
+                 {profile.bio || "Add a professional summary to make your profile stand out to recruiters."}
+              </p>
+              <div className="flex flex-wrap items-center gap-3 mt-4">
+                <span className="flex items-center gap-1.5 text-sm font-semibold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-md">
                   <MapPin className="w-4 h-4 text-slate-400"/> Open to Work
                 </span>
-                <span className="flex items-center gap-1.5 text-sm font-semibold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-md border border-emerald-100">
+                <span className="flex items-center gap-1.5 text-sm font-semibold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-md border border-emerald-100">
                   <ShieldCheck className="w-4 h-4"/> Verified Candidate
                 </span>
                 {hasOffer && (
-                  <span className="flex items-center gap-1.5 text-sm font-black text-amber-600 bg-amber-50 px-3 py-1 rounded-md border border-amber-200 shadow-sm animate-pulse-slow">
+                  <span className="flex items-center gap-1.5 text-sm font-black text-amber-600 bg-amber-50 px-3 py-1.5 rounded-md border border-amber-200 shadow-sm animate-pulse-slow">
                     <Trophy className="w-4 h-4 text-amber-500" /> Offer Received!
                   </span>
                 )}
+              </div>
+              <div className="flex items-center gap-3 mt-3">
+                {profile.linkedinUrl && (
+                  <a href={profile.linkedinUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-sm font-bold text-[#0A66C2] bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg border border-blue-100 transition-colors">
+                    <Linkedin className="w-4 h-4"/> LinkedIn
+                  </a>
+                )}
+                {profile.githubUrl && (
+                  <a href={profile.githubUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-sm font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg border border-slate-200 transition-colors">
+                    <Github className="w-4 h-4"/> GitHub
+                  </a>
+                )}
+              </div>
+            </div>
+            
+            {/* Upgraded Premium Stats & Desktop Edit Button */}
+            <div className="flex flex-col items-center sm:items-end gap-4 w-full sm:w-auto">
+              <button 
+                onClick={() => setIsEditing(!isEditing)}
+                className={`hidden sm:flex bg-white/80 backdrop-blur border text-slate-700 px-5 py-2.5 rounded-xl text-sm font-bold shadow-sm items-center gap-2 transition-all ${isEditing ? 'border-red-200 hover:text-red-500 hover:border-red-500' : 'border-slate-200 hover:text-[#38BDF8] hover:border-[#38BDF8]'}`}
+              >
+                {isEditing ? <><X className="w-4 h-4"/> Close Edit</> : <><Edit2 className="w-4 h-4"/> Edit Profile</>}
+              </button>
+              
+              <div className="flex flex-wrap items-center justify-center sm:justify-end gap-3 sm:gap-4 border-t sm:border-0 border-slate-100 pt-6 sm:pt-0 w-full sm:w-auto">
+              <div className="flex flex-col items-center justify-center bg-slate-50 border border-slate-100 p-3 sm:p-4 rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-blue-200 hover:bg-blue-50/50 transition-all min-w-[80px] sm:min-w-[90px]">
+                <span className="block text-2xl sm:text-3xl font-black text-[#0F172A] bg-clip-text text-transparent bg-gradient-to-br from-slate-800 to-slate-600">{stats.applicationsCount || 0}</span>
+                <span className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">Applied</span>
+              </div>
+              <div className="flex flex-col items-center justify-center bg-slate-50 border border-slate-100 p-3 sm:p-4 rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-purple-200 hover:bg-purple-50/50 transition-all min-w-[80px] sm:min-w-[90px]">
+                <span className="block text-2xl sm:text-3xl font-black text-[#0F172A] bg-clip-text text-transparent bg-gradient-to-br from-slate-800 to-slate-600">{stats.interviewsCount || 0}</span>
+                <span className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">Interviews</span>
+              </div>
+              <div className="flex flex-col items-center justify-center bg-slate-50 border border-slate-100 p-3 sm:p-4 rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-amber-200 hover:bg-amber-50/50 transition-all min-w-[80px] sm:min-w-[90px]">
+                <span className="block text-2xl sm:text-3xl font-black text-amber-500">{stats.offerLettersCount || 0}</span>
+                <span className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">Offers</span>
+              </div>
+              <div className="flex flex-col items-center justify-center bg-slate-50 border border-slate-100 p-3 sm:p-4 rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-emerald-200 hover:bg-emerald-50/50 transition-all min-w-[80px] sm:min-w-[90px]">
+                <span className="block text-2xl sm:text-3xl font-black text-[#0F172A] bg-clip-text text-transparent bg-gradient-to-br from-slate-800 to-slate-600">{stats.followsCount || 0}</span>
+                <span className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">Following</span>
+              </div>
               </div>
             </div>
           </div>
@@ -111,9 +176,10 @@ export default function Profile() {
       </div>
 
       {/* Edit Form */}
-      <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 md:p-10">
+      {isEditing && (
+      <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 md:p-10 animate-in fade-in slide-in-from-bottom-4 duration-300">
         <h2 className="text-xl font-bold flex items-center gap-2 mb-8 text-[#0F172A] pb-4 border-b border-slate-100">
-          <User className="w-6 h-6 text-[#38BDF8]" /> Personal Information
+          <User className="w-6 h-6 text-[#38BDF8]" /> Edit Personal Information
         </h2>
         
         <form onSubmit={handleUpdate} className="space-y-6">
@@ -144,11 +210,35 @@ export default function Profile() {
             </div>
 
             {/* LinkedIn Profile */}
-            <div className="md:col-span-2">
+            <div>
               <label className={labelClass}>LinkedIn Profile URL</label>
               <div className="relative">
                  <Linkedin className={iconWrapperClass} />
                  <input className={`${inputClass} pl-12`} placeholder="https://linkedin.com/in/yourprofile" value={profile.linkedinUrl} onChange={e=>setProfile({...profile, linkedinUrl: e.target.value})} />
+              </div>
+            </div>
+
+            {/* GitHub Profile */}
+            <div>
+              <label className={labelClass}>GitHub Profile URL</label>
+              <div className="relative">
+                 <Github className={iconWrapperClass} />
+                 <input className={`${inputClass} pl-12`} placeholder="https://github.com/yourusername" value={profile.githubUrl} onChange={e=>setProfile({...profile, githubUrl: e.target.value})} />
+              </div>
+            </div>
+
+            {/* Professional Bio */}
+            <div className="md:col-span-2">
+              <label className={labelClass}>Professional Summary / Bio</label>
+              <div className="relative">
+                 <FileText className={`${iconWrapperClass} !top-6 !translate-y-0`} />
+                 <textarea 
+                   rows="4"
+                   className={`${inputClass} pl-12 resize-none leading-relaxed`} 
+                   placeholder="Write a brief summary about your professional background, skills, and career goals..." 
+                   value={profile.bio} 
+                   onChange={e=>setProfile({...profile, bio: e.target.value})} 
+                 />
               </div>
             </div>
 
@@ -193,6 +283,7 @@ export default function Profile() {
           </div>
         </form>
       </div>
+      )}
     </div>
     </>
   );

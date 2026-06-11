@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
-import { Briefcase, Users, XCircle, Trash2, CheckCircle, MapPin, Clock, ArrowRight, Layers, Sparkles } from 'lucide-react';
+import { Briefcase, Users, XCircle, Trash2, CheckCircle, MapPin, Clock, ArrowRight, Layers, Sparkles, ThumbsUp, MessageSquare, Share2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function ManageJobs() {
@@ -125,7 +125,7 @@ export default function ManageJobs() {
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-4 mb-8">
+              <div className="grid grid-cols-2 gap-4 mb-5">
                 <div className="flex items-center gap-2.5 text-slate-500">
                   <div className="bg-slate-100 p-2 rounded-lg">
                     <MapPin className="w-4 h-4 text-slate-400" />
@@ -137,6 +137,16 @@ export default function ManageJobs() {
                     <Clock className="w-4 h-4 text-slate-400" />
                   </div>
                   <span className="text-sm font-bold">{j.jobType || 'Full-time'}</span>
+                </div>
+              </div>
+
+              {/* Interaction Stats for HR */}
+              <div className="bg-slate-50 rounded-2xl p-4 mb-6 border border-slate-100">
+                <div className="flex items-center justify-between">
+                   <div className="flex items-center gap-4 text-slate-600 text-sm font-bold">
+                      <span className="flex items-center gap-1.5"><ThumbsUp className="w-4 h-4 text-orange-500" /> {j.likesCount || 0} Likes</span>
+                      <span className="flex items-center gap-1.5"><Share2 className="w-4 h-4 text-emerald-500" /> {j.sharesCount || 0} Shares</span>
+                   </div>
                 </div>
               </div>
 
